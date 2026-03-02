@@ -191,7 +191,7 @@ users.forEach(user => {
                 <div class="user-username">@${user.username}</div>
             </div>
         </div>
-        <button class="follow-btn">Follow</button>
+        <button onclick="globalMessageUser(${user.id})" class="follow-btn">Message</button>
     `;
 
     desktopContainer.appendChild(card);
@@ -288,7 +288,7 @@ searchInput.addEventListener("input", async function () {
                     <div class="user-username">@${Username}</div>
                 </div>
             </div>
-            <button class="follow-btn">Follow</button>
+            <button onclick="globalMessageUser(${user.id})" class="follow-btn">Message</button>
         `;
 
         searchDesktopContainer.appendChild(card);
