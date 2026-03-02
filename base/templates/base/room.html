@@ -54,14 +54,6 @@
             <button id="closeDrawer" class="icon-btn-close">✕</button>
         </div>
 
-
-
-
-
-
-
-
-
         <div class="drawer-profile">
             <img onclick="visitUserProfile({{ studyroom.host.id }})" src="{{ studyroom.host.userprofile.avatar }}">
             <h3 onclick="visitUserProfile({{ studyroom.host.id }})" class="drawer-hostname">Host :
@@ -72,11 +64,11 @@
                 <h3>Room Control</h3>
 
                 <div class="room-actions">
-                    <a href="{% url 'room_edit' studyroom.id %}">Edit</a> 
+                    <a href="{% url 'room_edit' studyroom.id %}">Edit</a>
                     <span class="edit-delete-divider">
                         |
                     </span>
-                    
+
                     <a href="{% url 'delete-room' studyroom.id %}?next={{ request.get_full_path }}">Delete</a>
                 </div>
 

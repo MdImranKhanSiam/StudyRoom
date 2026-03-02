@@ -7,7 +7,10 @@
   <div class="chat">
     <!-- HEADER -->
     <header class="chat-header">
-      <div onclick="window.location.href = `/user_profile/{{ user2.id }}/`" class="user">
+      <div
+        onclick="window.location.href = `/user_profile/{{ user2.id }}/`"
+        class="user"
+      >
         <img src="{{ user2.userprofile.avatar }}" />
         <div>
           <h4>{{ user2.userprofile.display_name }}</h4>
@@ -39,12 +42,12 @@
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
       <h3>Chat Info</h3>
-      <button id="closeDrawer" class="icon-btn">✕</button>
+      <button id="closeDrawer" class="icon-btn-close">✕</button>
     </div>
 
-    <div onclick="window.location.href = `/user_profile/{{ user2.id }}/`" class="drawer-profile">
+    <div class="drawer-profile" onclick="window.location.href = `/user_profile/{{ user2.id }}/`">
       <img src="{{ user2.userprofile.avatar }}" />
-      <h4>{{ user2.userprofile.display_name }}</h4>
+      <h3 class="drawer-hostname">{{ user2.userprofile.display_name }}</h3>
       <p>@{{ user2.username }}</p>
     </div>
 
@@ -56,17 +59,19 @@
 
     <div class="drawer-content">
       <div class="tab-content active" id="info">
-        <p>🔒 End-to-end encrypted</p>
-        <p>Theme settings</p>
-        <p>Nicknames</p>
+        <p class="room-description">
+          
+          No info yet
+
+        </p>
       </div>
 
       <div class="tab-content" id="media">
-        <p>No media yet</p>
+        <p class="room-description">No media yet</p>
       </div>
 
       <div class="tab-content" id="files">
-        <p>No files yet</p>
+        <p class="room-description">No files yet</p>
       </div>
     </div>
   </aside>
@@ -211,7 +216,7 @@
             <div onclick="deleteThisMessage(${the_data.message_id})" class="message-delete">
                 Delete
             </div>
-        
+
         ` : ``}
 
       </div>
@@ -266,7 +271,7 @@
             <div onclick="deleteThisMessage(${the_data.message_id})" class="message-delete">
                 Delete
             </div>
-        
+
         ` : ``}
 
       </div>
@@ -514,7 +519,7 @@
 
 
 
-  
+
 
 
 
