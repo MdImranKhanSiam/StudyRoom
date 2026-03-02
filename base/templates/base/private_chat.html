@@ -137,7 +137,7 @@
 
 
 
-  
+
   // Message Delete
 
   const deleteMessageModal = document.getElementById("messageDeleteModal");
@@ -162,7 +162,7 @@
     if (e.target === deleteMessageModal) deleteMessageModal.classList.remove("active");
   };
 
-// Message Delete
+  // Message Delete
 
 
 
@@ -400,6 +400,7 @@
   const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
 
   function initWebSocket() {
+
     const url = `${wsScheme}://${window.location.host}/ws/chat/${roomId}/`;
 
     socket = new WebSocket(url);
@@ -507,6 +508,15 @@
   initWebSocket();
 
   // Websocket Handshake
+
+
+
+
+
+
+  
+
+
 
 
 

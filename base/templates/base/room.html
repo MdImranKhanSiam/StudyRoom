@@ -50,8 +50,8 @@
     <aside class="drawer" id="drawer">
 
         <div class="drawer-header">
-            <h3>Chat Info</h3>
-            <button id="closeDrawer" class="icon-btn">✕</button>
+            <h3>Room Info</h3>
+            <button id="closeDrawer" class="icon-btn-close">✕</button>
         </div>
 
 
@@ -72,7 +72,11 @@
                 <h3>Room Control</h3>
 
                 <div class="room-actions">
-                    <a href="{% url 'room_edit' studyroom.id %}">Edit</a> |
+                    <a href="{% url 'room_edit' studyroom.id %}">Edit</a> 
+                    <span class="edit-delete-divider">
+                        |
+                    </span>
+                    
                     <a href="{% url 'delete-room' studyroom.id %}?next={{ request.get_full_path }}">Delete</a>
                 </div>
 
@@ -274,7 +278,7 @@
     function prependOlderMessage(the_data) {
         const msg = document.createElement("div");
         msg.id = `message-${the_data.message_id}`;
-        
+
         let messageType;
         let usernameType;
 
@@ -543,7 +547,18 @@
     // Websocket Handshake
 
 
+    // window.addEventListener("pageshow", function (event) {
 
+    //     const navigationEntries = performance.getEntriesByType("navigation");
+
+    //     if (navigationEntries.length > 0) {
+    //         if (navigationEntries[0].type === "back_forward") {
+    //             // console.log("User came using Back/Forward button");
+    //             location.reload();
+    //         }
+    //     }
+
+    // });
 
 
     document.addEventListener("DOMContentLoaded", () => {

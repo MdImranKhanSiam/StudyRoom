@@ -2,183 +2,214 @@
 
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudyRoom</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudyRoom</title>
+    <link href="{% static 'image/other/studyroom.png' %}" rel="icon" />
 
-  <link href="{% static 'image/other/studyroom.png' %}" rel="icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/master.css' %}" />
+  </head>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="{% static 'css/master.css' %}" />
-</head>
+  <body>
+    <div class="desktop-only">
+      <nav class="navbar">
+        <div class="nav-left">
+          <a href="{% url 'Homepage' %}" class="logo">StudyRoom</a>
+        </div>
 
-<body>
-  <div class="desktop-only">
-    <nav class="navbar">
-      <div class="nav-left">
-        <a href="{% url 'Homepage' %}" class="logo">StudyRoom</a>
-      </div>
+        <div class="nav-center">
+          <a href="{% url 'Homepage' %}">Home</a>
+          <a href="{% url 'inbox' %}">Inbox</a>
+          <!-- <a href="#">Rooms</a> -->
+          <a href="{% url 'people' %}?search_people=all_users">People</a>
+        </div>
 
-      <div class="nav-center">
+        <div class="nav-right auth-area">
+          <!-- Search Bar -->
+          <form
+            action="{% url 'Homepage' %}"
+            method="get"
+            class="search-container"
+          >
+            <div class="search-box">
+              <svg class="search-icon" viewBox="0 0 24 24">
+                <path
+                  d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+                />
+              </svg>
+
+              <input
+                type="text"
+                name="search"
+                placeholder="Search rooms"
+                value="{{request.GET.search | default:''}}"
+              />
+
+              <button type="submit">Search</button>
+            </div>
+          </form>
+
+          <!-- AUTH -->
+          {% if request.user.is_authenticated %}
+          <div class="nav-profile">
+            <button class="nav-profile-btn" id="profileBtn">
+              <img
+                src="
+                {% if request.user.userprofile.avatar %}
+                  {{ request.user.userprofile.avatar }}
+                {% else %}
+                  {% static 'image/other/default-avatar.jpg' %}
+                {% endif %}
+              "
+                alt="Avatar"
+              />
+              <span>{{ request.user.username }}</span>
+            </button>
+
+            <div class="nav-profile-menu" id="profileMenu">
+              <a href="{% url 'user_profile' request.user.id %}">
+                <div class="view-profile-grid">
+                  <div class="view-profile-grid-image">
+                    <img
+                      src="
+                    {% if request.user.userprofile.avatar %}
+                      {{ request.user.userprofile.avatar }}
+                    {% else %}
+                      {% static 'image/other/default-avatar.jpg' %}
+                    {% endif %}
+                  "
+                    />
+                  </div>
+                  <div class="menu-header">
+                    <strong>{{ request.user.username }}</strong>
+                    <small>View profile</small>
+                  </div>
+                </div>
+              </a>
+              <a href="#">Settings & privacy</a>
+              <a href="#">Help & support</a>
+              <a href="#">Display & accessibility</a>
+
+              <div class="menu-divider"></div>
+
+              <a href="{% url 'logout' %}" class="logout">Log out</a>
+            </div>
+          </div>
+
+          {% else %}
+          <a href="{% url 'login' %}" class="login-btn">Login</a>
+          <a href="{% url 'registration' %}" class="register-btn">Sign up</a>
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+
+    <!-- Mobile Responsive -->
+    <div class="mobile-only">
+      <nav class="navbar">
+        <!-- Left Toggle -->
+        <button class="mobile-toggle" id="leftToggle">☰</button>
+
+        <!-- Center Logo -->
+        <div class="nav-center-logo">
+          <a href="{% url 'Homepage' %}" class="logo">StudyRoom</a>
+        </div>
+
+        <!-- Right Toggle -->
+        <button class="mobile-toggle" id="rightToggle">👤</button>
+      </nav>
+
+      <!-- Overlay -->
+      <div class="drawer-overlay" id="draweroverlay"></div>
+
+      <!-- LEFT DRAWER -->
+      <div class="mobile-drawer left-drawer" id="leftDrawer">
         <a href="{% url 'Homepage' %}">Home</a>
         <a href="{% url 'inbox' %}">Inbox</a>
         <!-- <a href="#">Rooms</a> -->
         <a href="{% url 'people' %}?search_people=all_users">People</a>
       </div>
 
-      <div class="nav-right auth-area">
-        <!-- Search Bar -->
-        <form action="{% url 'Homepage' %}" method="get" class="search-container">
+      <!-- RIGHT DRAWER -->
+      <div class="mobile-drawer right-drawer" id="rightDrawer">
+        <!-- Search -->
+        <form
+          action="{% url 'Homepage' %}"
+          method="get"
+          class="search-container"
+        >
           <div class="search-box">
             <svg class="search-icon" viewBox="0 0 24 24">
-              <path d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
+              <path
+                d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+              />
             </svg>
-
-            <input type="text" name="search" placeholder="Search rooms" value="{{request.GET.search | default:''}}" />
-
+            <input
+              type="text"
+              name="search"
+              placeholder="Search rooms"
+              value="{{request.GET.search | default:''}}"
+            />
             <button type="submit">Search</button>
           </div>
         </form>
 
-        <!-- AUTH -->
         {% if request.user.is_authenticated %}
-        <div class="nav-profile">
-          <button class="nav-profile-btn" id="profileBtn">
-            <img src="
-                {% if request.user.userprofile.avatar %}
-                  {{ request.user.userprofile.avatar }}
-                {% else %}
-                  {% static 'image/other/default-avatar.jpg' %}
-                {% endif %}
-              " alt="Avatar" />
-            <span>{{ request.user.username }}</span>
-          </button>
 
-          <div class="nav-profile-menu" id="profileMenu">
-            <a href="{% url 'user_profile' request.user.id %}">
-              <div class="view-profile-grid">
-                <div class="view-profile-grid-image">
-                  <img src="
-                    {% if request.user.userprofile.avatar %}
-                      {{ request.user.userprofile.avatar }}
-                    {% else %}
-                      {% static 'image/other/default-avatar.jpg' %}
-                    {% endif %}
-                  " />
-                </div>
-                <div class="menu-header">
-                  <strong>{{ request.user.username }}</strong>
-                  <small>View profile</small>
-                </div>
-              </div>
-            </a>
-            <a href="#">Settings & privacy</a>
-            <a href="#">Help & support</a>
-            <a href="#">Display & accessibility</a>
-
-            <div class="menu-divider"></div>
-
-            <a href="{% url 'logout' %}" class="logout">Log out</a>
-          </div>
-        </div>
-
-        {% else %}
-        <a href="{% url 'login' %}" class="login-btn">Login</a>
-        <a href="{% url 'registration' %}" class="register-btn">Sign up</a>
-        {% endif %}
-      </div>
-    </nav>
-  </div>
-
-  <!-- Mobile Responsive -->
-  <div class="mobile-only">
-    <nav class="navbar">
-      <!-- Left Toggle -->
-      <button class="mobile-toggle" id="leftToggle">☰</button>
-
-      <!-- Center Logo -->
-      <div class="nav-center-logo">
-        <a href="{% url 'Homepage' %}" class="logo">StudyRoom</a>
-      </div>
-
-      <!-- Right Toggle -->
-      <button class="mobile-toggle" id="rightToggle">👤</button>
-    </nav>
-
-    <!-- Overlay -->
-    <div class="drawer-overlay" id="draweroverlay"></div>
-
-    <!-- LEFT DRAWER -->
-    <div class="mobile-drawer left-drawer" id="leftDrawer">
-      <a href="{% url 'Homepage' %}">Home</a>
-      <a href="{% url 'inbox' %}">Inbox</a>
-      <!-- <a href="#">Rooms</a> -->
-      <a href="{% url 'people' %}?search_people=all_users">People</a>
-    </div>
-
-    <!-- RIGHT DRAWER -->
-    <div class="mobile-drawer right-drawer" id="rightDrawer">
-      <!-- Search -->
-      <form action="{% url 'Homepage' %}" method="get" class="search-container">
-        <div class="search-box">
-          <svg class="search-icon" viewBox="0 0 24 24">
-            <path d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" />
-          </svg>
-          <input type="text" name="search" placeholder="Search rooms" value="{{request.GET.search | default:''}}" />
-          <button type="submit">Search</button>
-        </div>
-      </form>
-
-      {% if request.user.is_authenticated %}
-
-      <!-- Profile Header -->
-      <a href="{% url 'user_profile' request.user.id %}">
-        <div class="view-profile-grid">
-          <div class="view-profile-grid-image">
-            <img src="
+        <!-- Profile Header -->
+        <a href="{% url 'user_profile' request.user.id %}">
+          <div class="view-profile-grid">
+            <div class="view-profile-grid-image">
+              <img
+                src="
                     {% if request.user.userprofile.avatar %}
                         {{ request.user.userprofile.avatar }}
                     {% else %}
                         {% static 'image/other/default-avatar.jpg' %}
                     {% endif %}
-                " />
+                "
+              />
+            </div>
+            <div class="menu-header">
+              <strong>{{ request.user.username }}</strong>
+              <small>View profile</small>
+            </div>
           </div>
-          <div class="menu-header">
-            <strong>{{ request.user.username }}</strong>
-            <small>View profile</small>
-          </div>
+        </a>
+
+        <a href="#">Settings & privacy</a>
+        <a href="#">Help & support</a>
+        <a href="#">Display & accessibility</a>
+
+        <div class="menu-divider"></div>
+
+        <div class="drawer-auth">
+          <a href="{% url 'logout' %}" class="mobile-logout-btn">
+            <span class="mobile-logout">Log out</span>
+          </a>
         </div>
-      </a>
 
-      <a href="#">Settings & privacy</a>
-      <a href="#">Help & support</a>
-      <a href="#">Display & accessibility</a>
+        {% else %}
 
-      <div class="menu-divider"></div>
-
-      <div class="drawer-auth">
-        <a href="{% url 'logout' %}" class="mobile-logout-btn">
-          <span class="mobile-logout">Log out</span>
-        </a>
+        <div class="drawer-auth">
+          <a href="{% url 'login' %}" class="mobile-login-btn">
+            <span class="mobile-login">Login</span>
+          </a>
+          <a href="{% url 'registration' %}" class="mobile-register-btn">
+            <span class="mobile-signup">Sign up</span>
+          </a>
+        </div>
+        {% endif %}
       </div>
-
-      {% else %}
-
-      <div class="drawer-auth">
-        <a href="{% url 'login' %}" class="mobile-login-btn">
-          <span class="mobile-login">Login</span>
-        </a>
-        <a href="{% url 'registration' %}" class="mobile-register-btn">
-          <span class="mobile-signup">Sign up</span>
-        </a>
-      </div>
-      {% endif %}
     </div>
-  </div>
 
-  <!-- {% if messages %}
+    <!-- {% if messages %}
     <ul class="messages">
       {% for message in messages %}
       <li>{{ message }}</li>
@@ -186,142 +217,147 @@
     </ul>
     {% endif %}  -->
 
+    <!-- Message Delete Modal -->
 
+    <div class="message-delete-modal" id="messageDeleteModal">
+      <div class="message-delete-modal-content">
+        <p>Are you sure you want to delete this message?</p>
 
-
-
-
-
-
-  <!-- Message Delete Modal -->
-
-
-
-  <div class="message-delete-modal" id="messageDeleteModal">
-    <div class="message-delete-modal-content">
-      <p>Are you sure you want to delete this message?</p>
-
-      <!-- <input type="text" name="identifier" placeholder="Username/Email" required>
+        <!-- <input type="text" name="identifier" placeholder="Username/Email" required>
       <input type="password" name="password" placeholder="Password" required> -->
 
-      <button class="message-delete-modal-confirm" id="MessageDeleteConfirmed" type="button">Delete</button>
-      <button class="message-delete-modal-cancel" id="MessageDeleteCanceled" type="button">Cancel</button>
-
-
+        <button
+          class="message-delete-modal-confirm"
+          id="MessageDeleteConfirmed"
+          type="button"
+        >
+          Delete
+        </button>
+        <button
+          class="message-delete-modal-cancel"
+          id="MessageDeleteCanceled"
+          type="button"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- Message Delete Modal -->
+    <!-- Message Delete Modal -->
 
+    {% block content %} {% endblock %}
+  </body>
 
+  <script>
+    // navigationEntries[0].type can be:
 
+    // "navigate" → normal link click
 
+    // "reload" → user pressed refresh
 
+    // "back_forward" → user used back / forward button
 
+    window.addEventListener("pageshow", function (event) {
+      const navigationEntries = performance.getEntriesByType("navigation");
 
-
-  {% block content %} {% endblock %}
-</body>
-
-<script>
-  function timeSince(djangoTimestamp) {
-    const now = new Date();
-    const past = new Date(djangoTimestamp);
-
-    const seconds = Math.floor((now - past) / 1000);
-
-    if (seconds < 5) return "Just now";
-
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 1) return `${seconds}s ago`;
-    if (minutes < 60) return `${minutes}m ago`;
-
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-
-    const days = Math.floor(hours / 24);
-    if (days === 1) return "Yesterday";
-    if (days < 7) return `${days}d ago`;
-
-    // Older than 7 days → show formatted date
-    return past.toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  }
-
-
-  // Functions for urls
-
-
-
-  // Delete message and return to the previous url with next
-  // function deleteMessage(messageId) {
-  //   window.location.href = `/delete_message/${messageId}/?next={{ request.get_full_path }}`;
-  // }
-
-
-  function visitUserProfile(UserId) {
-    window.location.href = `/user_profile/${UserId}/`;
-  }
-
-
-
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const profileBtn = document.getElementById("profileBtn");
-    const profileMenu = document.getElementById("profileMenu");
-
-    if (!profileBtn || !profileMenu) return;
-
-    // Toggle menu
-    profileBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      profileMenu.classList.toggle("show");
-    });
-
-    // Close on outside click
-    document.addEventListener("click", function () {
-      profileMenu.classList.remove("show");
-    });
-
-    // Prevent closing when clicking inside
-    profileMenu.addEventListener("click", function (e) {
-      e.stopPropagation();
-    });
-
-    // Close with ESC
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        profileMenu.classList.remove("show");
+      if (navigationEntries.length > 0) {
+        if (navigationEntries[0].type === "back_forward") {
+          // console.log("User came using Back/Forward button");
+          location.reload();
+        }
       }
     });
-  });
 
-  const masterleftToggle = document.getElementById("leftToggle");
-  const masterrightToggle = document.getElementById("rightToggle");
-  const masterleftDrawer = document.getElementById("leftDrawer");
-  const masterrightDrawer = document.getElementById("rightDrawer");
-  const masteroverlay = document.getElementById("draweroverlay");
+    function timeSince(djangoTimestamp) {
+      const now = new Date();
+      const past = new Date(djangoTimestamp);
 
-  masterleftToggle.onclick = () => {
-    masterleftDrawer.classList.toggle("active");
-    masteroverlay.classList.toggle("active");
-  };
+      const seconds = Math.floor((now - past) / 1000);
 
-  masterrightToggle.onclick = () => {
-    masterrightDrawer.classList.toggle("active");
-    masteroverlay.classList.toggle("active");
-  };
+      if (seconds < 5) return "Just now";
 
-  masteroverlay.onclick = () => {
-    masterleftDrawer.classList.remove("active");
-    masterrightDrawer.classList.remove("active");
-    masteroverlay.classList.remove("active");
-  };
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 1) return `${seconds}s ago`;
+      if (minutes < 60) return `${minutes}m ago`;
 
-  // Add comment
-</script>
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
 
+      const days = Math.floor(hours / 24);
+      if (days === 1) return "Yesterday";
+      if (days < 7) return `${days}d ago`;
+
+      // Older than 7 days → show formatted date
+      return past.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    // Functions for urls
+
+    // Delete message and return to the previous url with next
+    // function deleteMessage(messageId) {
+    //   window.location.href = `/delete_message/${messageId}/?next={{ request.get_full_path }}`;
+    // }
+
+    function visitUserProfile(UserId) {
+      window.location.href = `/user_profile/${UserId}/`;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const profileBtn = document.getElementById("profileBtn");
+      const profileMenu = document.getElementById("profileMenu");
+
+      if (!profileBtn || !profileMenu) return;
+
+      // Toggle menu
+      profileBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        profileMenu.classList.toggle("show");
+      });
+
+      // Close on outside click
+      document.addEventListener("click", function () {
+        profileMenu.classList.remove("show");
+      });
+
+      // Prevent closing when clicking inside
+      profileMenu.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+
+      // Close with ESC
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          profileMenu.classList.remove("show");
+        }
+      });
+    });
+
+    const masterleftToggle = document.getElementById("leftToggle");
+    const masterrightToggle = document.getElementById("rightToggle");
+    const masterleftDrawer = document.getElementById("leftDrawer");
+    const masterrightDrawer = document.getElementById("rightDrawer");
+    const masteroverlay = document.getElementById("draweroverlay");
+
+    masterleftToggle.onclick = () => {
+      masterleftDrawer.classList.toggle("active");
+      masteroverlay.classList.toggle("active");
+    };
+
+    masterrightToggle.onclick = () => {
+      masterrightDrawer.classList.toggle("active");
+      masteroverlay.classList.toggle("active");
+    };
+
+    masteroverlay.onclick = () => {
+      masterleftDrawer.classList.remove("active");
+      masterrightDrawer.classList.remove("active");
+      masteroverlay.classList.remove("active");
+    };
+
+    // Add comment
+  </script>
 </html>
