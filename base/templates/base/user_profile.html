@@ -2,57 +2,48 @@
 
 <link rel="stylesheet" href="{% static 'css/user_profile.css' %}" />
 
+
 <div class="profile-page">
-  <!-- Cover -->
-  <div class="profile-cover"></div>
+    <!-- Cover -->
+    <div class="profile-cover"></div>
 
-  <!-- Profile Card -->
-  <div class="profile-card">
-    <!-- Avatar -->
-    <div class="profile-avatar">
-      <img
-        src="{{ this_profile_user.avatar }}"
-        class="avatar"
-        onclick="openImage(this.src)"
-      />
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <!-- Avatar -->
+        <div class="profile-avatar">
+            <img src="{{ this_profile_user.avatar }}" class="avatar" onclick="openImage(this.src)" />
 
-      <div id="imageModal" class="profile-modal" onclick="closeImage()">
-        <img id="modalImg" />
-      </div>
+            <div id="imageModal" class="profile-modal" onclick="closeImage()">
+                <img id="modalImg">
+            </div>
 
-      {% if request.user == this_profile_user.user %}
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input
-          type="file"
-          accept="image/*"
-          id="update_avatar"
-          name="update_avatar_data"
-          style="display: none"
-          required
-        />
-        <button type="button" id="click_update_avatar" class="edit-avatar">
-          ✎
-        </button>
-      </form>
-      {% endif %}
-    </div>
+            {% if request.user == this_profile_user.user %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" accept="image/*" id="update_avatar" name="update_avatar_data" style="display: none"
+                    required />
+                <button type="button" id="click_update_avatar" class="edit-avatar">
+                    ✎
+                </button>
+            </form>
+            {% endif %}
+        </div>
 
-    <!-- User Info -->
-    <div class="profile-info">
-      <h2>{{ this_profile_user.display_name }}</h2>
-      <p class="bio">
-        {% if this_profile_user.bio %} {{ this_profile_user.bio }} {% else %} No
-        bio yet ✨ {% endif %}
-      </p>
-    </div>
-    <!-- Stats -->
-    <div class="profile-stats">
-      <div>
-        <strong>Rooms</strong>
-        <span>{{ total_rooms }}</span>
-      </div>
-      <!-- <div>
+        <!-- User Info -->
+        <div class="profile-info">
+            <h2>{{ this_profile_user.display_name }}</h2>
+            <p class="bio">
+                {% if this_profile_user.bio %} {{ this_profile_user.bio }} {% else %} No bio yet
+                ✨ {% endif %}
+            </p>
+        </div>
+        <!-- Stats -->
+        <div class="profile-stats">
+            <div>
+                <strong>Rooms</strong>
+                <span>{{ total_rooms }}</span>
+            </div>
+            <!-- <div>
                 <strong>Topics</strong>
                 <span>8</span>
             </div>
@@ -60,96 +51,94 @@
                 <strong>Reputation</strong>
                 <span>{{ user.profile.reputation|default:0 }}</span>
             </div> -->
+        </div>
+
+        <!-- Actions -->
+        <div class="profile-actions">
+            {% if request.user == this_profile_user.user %}
+            <button id="editProfileBtn" class="primary">Edit Profile</button>
+            <!-- <button class="secondary">Settings</button> -->
+            {% else %}
+            <button id="" class="primary"
+                onclick="window.location.href='{% url 'private-chat' this_profile_user.user.id %}'">Message</button>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- Actions -->
-    <div class="profile-actions">
-      {% if request.user == this_profile_user.user %}
-      <button id="editProfileBtn" class="primary">Edit Profile</button>
-      <!-- <button class="secondary">Settings</button> -->
-      {% else %}
-      <button
-        id=""
-        class="primary"
-        onclick="window.location.href='{% url 'private-chat' this_profile_user.user.id %}'"
-      >
-        Message
-      </button>
-      {% endif %}
+    <!-- Tabs -->
+    <div class="profile-tabs">
+        <button class="tab active" data-tab="about">About</button>
+        <button class="tab" data-tab="rooms">Rooms</button>
+        <button class="tab" data-tab="activity">Activity</button>
     </div>
-  </div>
 
-  <!-- Tabs -->
-  <div class="profile-tabs">
-    <button class="tab active" data-tab="about">About</button>
-    <button class="tab" data-tab="rooms">Rooms</button>
-    <button class="tab" data-tab="activity">Activity</button>
-  </div>
+    <!-- Tab Content -->
+    <div class="profile-content">
+        <!-- About section -->
+        <div class="tab-content active" id="about">
+            <h3>About</h3>
+            <!-- <p>This is where user info, links, and description go.</p> -->
 
-  <!-- Tab Content -->
-  <div class="profile-content">
-    <!-- About section -->
-    <div class="tab-content active" id="about">
-      <h3>About</h3>
-      <!-- <p>This is where user info, links, and description go.</p> -->
+            <div class="about-card">
+                <!-- <h3 class="about-title">About</h3> -->
 
-      <div class="about-card">
-        <!-- <h3 class="about-title">About</h3> -->
-
-        <!-- <p class="about-bio">
+                <!-- <p class="about-bio">
                     Passionate about technology, programming, and building meaningful
                     digital products. Always curious, always learning.
                 </p> -->
 
-        <div class="about-details">
-          <div class="about-item">
-            <span class="label">Username</span>
-            <span class="value">@{{ this_profile_user.user.username }}</span>
-          </div>
+                <div class="about-details">
+                    <div class="about-item">
+                        <span class="label">Username</span>
+                        <span class="value">@{{ this_profile_user.user.username }}</span>
+                    </div>
 
-          <div class="about-item">
-            <span class="label">Date of birth</span>
-            <span class="value">
-              {% if this_profile_user.date_of_birth %} {{
-              this_profile_user.date_of_birth }} {% endif %}
-            </span>
-          </div>
+                    <div class="about-item">
+                        <span class="label">Date of birth</span>
+                        <span class="value">
+                            {% if this_profile_user.date_of_birth %}
+                            {{ this_profile_user.date_of_birth }}
+                            {% endif %}
+                        </span>
+                    </div>
 
-          <div class="about-item">
-            <span class="label">Gender</span>
-            <span class="value">
-              {% if this_profile_user.gender %} {{ this_profile_user.gender }}
-              {% endif %}
-            </span>
-          </div>
+                    <div class="about-item">
+                        <span class="label">Gender</span>
+                        <span class="value">
 
-          <div class="about-item">
-            <span class="label">Joined</span>
-            <span class="value"
-              >{{ this_profile_user.user.date_joined|date:"M. d, Y" }}</span
-            >
-          </div>
+                            {% if this_profile_user.gender %}
+                            {{ this_profile_user.gender }}
+                            {% endif %}
+                        </span>
+                    </div>
 
-          <div class="about-item">
-            <span class="label">Location</span>
-            <span class="value">
-              {% if this_profile_user.country %} {{ this_profile_user.country }}
-              {% endif %}
-            </span>
-          </div>
+                    <div class="about-item">
+                        <span class="label">Joined</span>
+                        <span class="value">{{ this_profile_user.user.date_joined|date:"M. d, Y" }}</span>
+                    </div>
 
-          <!-- <div class="about-item">
+                    <div class="about-item">
+                        <span class="label">Location</span>
+                        <span class="value">
+                            {% if this_profile_user.country %}
+                            {{ this_profile_user.country }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- <div class="about-item">
                         <span class="label">Interests</span>
                         <span class="value">Web Dev, AI, Gaming</span>
                     </div> -->
-        </div>
-      </div>
+                </div>
+            </div>
 
-      <br /><br />
+            <br /><br />
 
-      <!-- <h3>Posts</h3> -->
-      <!-- Post section -->
-      <!-- <div id="posts">
+
+            <!-- <h3>Posts</h3> -->
+            <!-- Post section -->
+            <!-- <div id="posts">
                 {% for i in total %}
 
                 <div class="post-card">
@@ -176,192 +165,151 @@
                 </div>
                 {% endfor %}
             </div> -->
-    </div>
 
-    <div class="tab-content" id="rooms">
-      <h2>{{this_profile_user.display_name}}'s Study Rooms</h2>
 
-      <!-- ROOMS -->
-      <div class="card">
-        <div class="room-header">
-          <!-- <h2>Study Rooms</h2> -->
-          <!-- <a href="{% url 'room_create' %}">+ Create Room</a> -->
+
         </div>
 
-        <div class="room-count">
-          {{this_profile_user.display_name}} is currently hosting {{ total_rooms
-          }} room{{ total_rooms|pluralize }}
-        </div>
+        <div class="tab-content" id="rooms">
+            <h2>{{this_profile_user.display_name}}'s Study Rooms</h2>
 
-        <div class="scroll-box">
-          {% for room in users_rooms %}
-          <div
-            class="room-card clickable-room"
-            onclick="window.location.href='{% url 'Room' room.id %}'"
-          >
-            <div class="room-id">ID #{{ room.id }}</div>
+            <!-- ROOMS -->
+            <div class="card">
+                <div class="room-header">
+                    <!-- <h2>Study Rooms</h2> -->
+                    <!-- <a href="{% url 'room_create' %}">+ Create Room</a> -->
+                </div>
 
-            <!-- {% if request.user == room.host %}
+                <div class="room-count">
+                    {{this_profile_user.display_name}} is currently hosting {{ total_rooms }}
+                    room{{ total_rooms|pluralize }}
+                </div>
+
+                <div class="scroll-box">
+                    {% for room in users_rooms %}
+                    <div class="room-card clickable-room" onclick="window.location.href='{% url 'Room' room.id %}'">
+                        <div class="room-id">ID #{{ room.id }}</div>
+
+                        <!-- {% if request.user == room.host %}
                         <div class="room-actions">
                             <a href="{% url 'room_edit' room.id %}">Edit</a> |
                             <a href="{% url 'delete-room' room.id %}">Delete</a>
                         </div>
                         {% endif %} -->
 
-            <div class="room-content">
-              <div class="room-title">{{ room.name }}</div>
+                        <div class="room-content">
+                            <div class="room-title">{{ room.name }}</div>
 
-              <div class="room-meta">
-                <span class="topic-badge">{{ room.topic.name }}</span>
-                <span
-                  >Host ·
-                  <a
-                    href="{% url 'user_profile' room.host.id %}"
-                    style="text-decoration: none"
-                  >
-                    {{ room.host.username }}
-                  </a>
-                </span>
-              </div>
+                            <div class="room-meta">
+                                <span class="topic-badge">{{ room.topic.name }}</span>
+                                <span>Host ·
+                                    <a href="{% url 'user_profile' room.host.id %}" style="text-decoration: none">
+                                        {{ room.host.username }}
+                                    </a>
+                                </span>
+                            </div>
 
-              <div class="room-created">
-                Created · {{ room.created|timesince }} ago
-              </div>
+                            <div class="room-created">
+                                Created · {{ room.created|timesince }} ago
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-          </div>
-          {% endfor %}
         </div>
-      </div>
-    </div>
 
-    <div class="tab-content" id="activity">
-      <h2>Recent Activities</h2>
+        <div class="tab-content" id="activity">
+            <h2>Recent Activities</h2>
 
-      <!-- ACTIVITIES -->
-      <div class="card">
-        <!-- <h2>Recent Activities</h2> -->
-        <div class="scroll-box">
-          {% if users_messages %} {% for user_message in users_messages %}
-          <div class="activity">
-            <div class="activity-header">
-              <span class="activity-username">
-                <a
-                  href="{% url 'user_profile' user_message.user.id %}"
-                  style="text-decoration: none"
-                >
-                  @{{ user_message.user.username }}
-                </a>
-              </span>
-              <span class="activity-time"
-                >{{ user_message.created|timesince }} ago</span
-              >
+            <!-- ACTIVITIES -->
+            <div class="card">
+                <!-- <h2>Recent Activities</h2> -->
+                <div class="scroll-box">
+                    {% if users_messages %}
+                    {% for user_message in users_messages %}
+                    <div class="activity">
+                        <div class="activity-header">
+                            <span class="activity-username">
+                                <a href="{% url 'user_profile' user_message.user.id %}" style="text-decoration: none;">
+                                    @{{ user_message.user.username }}
+                                </a>
+                            </span>
+                            <span class="activity-time">{{ user_message.created|timesince }} ago</span>
+                        </div>
+                        <div class="activity-room">
+                            replied in <strong>
+                                <a href="{% url 'Room' user_message.room.id %}" style="text-decoration: none;">
+                                    {{ user_message.room }}
+                                </a>
+                            </strong>
+                            ({{ user_message.room.topic.name }})
+                        </div>
+                        <div class="activity-msg">
+                            {{ user_message.body }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No activities</p>
+                    {% endif %}
+                </div>
             </div>
-            <div class="activity-room">
-              replied in
-              <strong>
-                <a
-                  href="{% url 'Room' user_message.room.id %}"
-                  style="text-decoration: none"
-                >
-                  {{ user_message.room }}
-                </a>
-              </strong>
-              ({{ user_message.room.topic.name }})
-            </div>
-            <div class="activity-msg">{{ user_message.body }}</div>
-          </div>
-          {% endfor %} {% else %}
-          <p>No activities</p>
-          {% endif %}
+            <!-- ACTIVITIES -->
         </div>
-      </div>
-      <!-- ACTIVITIES -->
     </div>
-  </div>
 </div>
+
+
+
 
 <!-- Edit Profile Modal Pop up-->
 <div id="editProfileModal" class="modal">
-  <div class="modal-overlay"></div>
+    <div class="modal-overlay"></div>
 
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Edit Profile</h2>
-      <button class="close-btn" id="closeModalBtn">&times;</button>
-    </div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Profile</h2>
+            <button class="close-btn" id="closeModalBtn">&times;</button>
+        </div>
 
-    <form method="POST">
-      {% csrf_token %}
+        <form method="POST">
+            {% csrf_token %}
 
-      <div class="form-group">
-        <label>Name</label>
-        <input
-          type="text"
-          name="display_name"
-          value="{{ this_profile_user.display_name|default_if_none:'' }}"
-        />
-      </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="display_name" value="{{ this_profile_user.display_name|default_if_none:'' }}">
+            </div>
 
-      <div class="form-group">
-        <label>Bio</label>
-        <textarea name="bio" rows="2" id="profileBio">
-{{ this_profile_user.bio|default_if_none:'' }}</textarea
-        >
-      </div>
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea name="bio" rows="2" id="profileBio">{{ this_profile_user.bio|default_if_none:'' }}</textarea>
+            </div>
 
-      <div class="form-group">
-        <label>Gender</label>
-        <select name="gender">
-          <option value="">Select Gender</option>
-          <!-- <option>Male</option>
+            <div class="form-group">
+                <label>Gender</label>
+                <select name="gender">
+                    <option value="">Select Gender</option>
+                    <!-- <option>Male</option>
                     <option>Female</option> -->
 
-          <option
-            value="Male"
-            {%
-            if
-            this_profile_user.gender=""
-            ="Male"
-            %}selected{%
-            endif
-            %}
-          >
-            Male
-          </option>
-          <option
-            value="Female"
-            {%
-            if
-            this_profile_user.gender=""
-            ="Female"
-            %}selected{%
-            endif
-            %}
-          >
-            Female
-          </option>
-        </select>
-      </div>
+                    <option value="Male" {% if this_profile_user.gender == "Male" %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if this_profile_user.gender == "Female" %}selected{% endif %}>Female
+                    </option>
+                </select>
+            </div>
 
-      <div class="form-group">
-        <label>Date of Birth</label>
-        <input
-          type="date"
-          name="date_of_birth"
-          value="{{ this_profile_user.date_of_birth|date:'Y-m-d' }}"
-        />
-      </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="date_of_birth" value="{{ this_profile_user.date_of_birth|date:'Y-m-d' }}">
+            </div>
 
-      <div class="form-group">
-        <label>Country</label>
-        <input
-          type="text"
-          name="country"
-          value="{{ this_profile_user.country|default_if_none:'' }}"
-        />
-      </div>
+            <div class="form-group">
+                <label>Country</label>
+                <input type="text" name="country" value="{{ this_profile_user.country|default_if_none:'' }}">
+            </div>
 
-      <!-- <div class="form-group">
+            <!-- <div class="form-group">
                 <label>Website</label>
                 <input type="url" name="website" placeholder="https://example.com">
             </div>
@@ -371,12 +319,23 @@
                 <input type="url" name="social" placeholder="https://example.com">
             </div> -->
 
-      <button type="submit" class="save-btn">Save Changes</button>
-    </form>
-  </div>
+            <button type="submit" class="save-btn">Save Changes</button>
+        </form>
+    </div>
 </div>
 
 <!-- Edit Profile Modal -->
+
+
+
+
+
+
+
+
+
+
+
 
 <script>
   const currentUser = "{{ request.user.id }}";
