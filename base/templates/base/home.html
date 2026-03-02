@@ -1,0 +1,177 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+<div class="home-wrapper">
+
+<div class="home-grid">
+
+    <!-- TOPICS -->
+    <div class="card">
+        <h2>Browse Topics</h2>
+        <div class="scroll-box topic-list">
+            <a id="all_topics" href="{% url 'Homepage' %}">All</a>
+            {% for topic in topics %}
+            <a id="{{topic.name}}" href="{% url 'Homepage' %}?search={{topic.name|urlencode}}">
+                {{ topic.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div class="card">
+
+        <div class="room-header">
+            <h2>Study Rooms</h2>
+            <a href="{% url 'room_create' %}">+ Create Room</a>
+        </div>
+
+        <div class="room-count">
+            Total {{ total_rooms }} Room{{ total_rooms|pluralize }} Found Near You
+        </div>
+
+    
+        <div class="scroll-box">
+
+            {% for room in rooms %}
+            <div class="room-card clickable-room" onclick="window.location.href='{% url 'Room' room.id %}'">
+
+                <div class="room-id">ID #{{ room.id }}</div>
+
+                
+
+                <div class="room-content">
+                    <div class="room-title">
+                        {{ room.name }}
+                    </div>
+
+                    <div class="room-meta">
+                        <span class="topic-badge">{{ room.topic.name }}</span>
+                        <span class="room-meta-host">Host · 
+                            <!-- {% url 'user_profile' room.host.id %} -->
+                            <a href="{% url 'Room' room.id %}" class="host-name-section">
+                                <span>@{{ room.host.username }}</span>
+                                <span class="host-avatar-wrapper">
+                                    <img src="
+                                        {% if room.host.userprofile.avatar %}
+                                            {{room.host.userprofile.avatar}}
+                                        {% else %}
+                                            {% static 'image/other/default-avatar.jpg' %}
+                                        {% endif %}
+                                        
+                                    ">
+                                </span>
+                            </a>
+                        </span>
+                    </div>
+
+                    <div class="room-created">
+                        Created · {{ room.created|timesince }} ago
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+    
+
+    <!-- ACTIVITIES -->
+    <div class="card">
+        <h2>Recent Activities</h2>
+        <div class="scroll-box">
+            {% if recent_messages %}
+            {% for user_message in recent_messages %}
+            <div class="activity">
+                <div class="activity-header">
+                    <span class="activity-username">
+                        <a href="{% url 'user_profile' user_message.user.id %}" style="text-decoration: none;">
+                            @{{ user_message.user.username }}
+                        </a>
+                    </span>
+                    <span class="activity-time">{{ user_message.created|timesince }} ago</span>
+                </div>
+                <div class="activity-room">
+                    replied in <strong>
+                        <a href="{% url 'Room' user_message.room.id %}" style="text-decoration: none;">
+                            {{ user_message.room }}
+                        </a>
+                    </strong>
+                    ({{ user_message.room.topic.name }})
+                </div>
+                <div class="activity-msg">
+                    {{ user_message.body }}
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>No activities</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    © 2026 <span>Imran Khan</span>. All rights reserved.
+</div>
+
+</div>
+
+
+
+
+<script>
+    const searchParams = new URLSearchParams(window.location.search);
+    const getParamsValue = searchParams.get("search");
+    const searchParamsValue = decodeURIComponent(getParamsValue);
+
+    // console.log(searchParamsValue);
+
+    const searchTopics = [
+        {% for topic in topics %}
+            {
+                topicName : "{{ topic.name }}"
+            } {% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // console.log(searchTopics);
+
+    let noneActive = true;
+
+    function decodeHTML(html) {
+        const txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+
+
+    searchTopics.forEach(topic => {
+
+        const cleanTopicName = decodeHTML(topic.topicName).trim().toLowerCase();
+        const cleanedSearchParamsValue = searchParamsValue.trim().toLowerCase();
+
+        // console.log(cleanTopicName);
+        // console.log(cleanedSearchParamsValue);
+
+        if(cleanedSearchParamsValue === cleanTopicName) {
+            document.getElementById(searchParamsValue).classList.add("active");
+            noneActive = false;
+        }
+    });
+
+    if (noneActive) {
+        document.getElementById("all_topics").classList.add("active");
+    }
+
+</script>
+
+{% endblock %}

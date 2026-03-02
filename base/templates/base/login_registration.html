@@ -1,0 +1,75 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/login_registration.css' %}">
+
+{% if page_type == 'login' %}
+
+<div class="login-wrapper">
+    <div class="login-card">
+        <h2>
+            Login
+        </h2>
+
+        {% if form.errors %}
+            <div class="form-errors">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" class="input-field" required>
+            <input type="password" name="password" placeholder="Password" class="input-field" required>
+
+            <button class="btn-login" type="submit">Login</button>
+        </form>
+
+        <div class="login-footer">
+            Haven't signed up yet? 
+            <a href="{% url 'registration' %}">Sign up</a>
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+<div class="register-wrapper">
+    <div class="register-card">
+        <h2>
+            Create Account
+        </h2>
+
+        {% if form.errors %}
+        <div class="errors">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.username }}
+            {{ form.password1 }}
+            {{ form.password2 }}
+
+            <button class="btn-register" type="submit">
+                Register
+            </button>
+        </form>
+
+        <div class="register-footer">
+            Already have an account?
+            <a href="{% url 'login' %}">
+                Login
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

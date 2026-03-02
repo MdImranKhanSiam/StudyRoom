@@ -1,0 +1,115 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<style>
+.delete-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+
+.delete-card {
+    background: #ffffff;
+    width: 500px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+.delete-card:hover {
+    transform: translateY(-3px);
+}
+
+.delete-icon {
+    font-size: 50px;
+    color: #ff4d4f;
+    margin-bottom: 20px;
+}
+
+.delete-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.delete-text {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 15px;
+}
+
+.delete-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-cancel {
+    padding: 10px 25px;
+    border-radius: 10px;
+    border: none;
+    background: #f1f1f1;
+    color: #444;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.btn-cancel:hover {
+    background: #e2e2e2;
+}
+
+.btn-delete {
+    padding: 10px 25px;
+    border-radius: 10px;
+    border: none;
+    background: #ff4d4f;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background: #e63946;
+}
+</style>
+
+<div class="delete-wrapper">
+    <div class="delete-card">
+        <div class="delete-icon">⚠️</div>
+
+        <div class="delete-title">
+            Delete Confirmation
+        </div>
+
+        <div class="delete-text">
+            Are you sure you want to delete 
+            <strong>"{{ item }}"</strong>?
+            <br>
+            This action cannot be undone.
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+            <div class="delete-actions">
+                <a href="{{ request.GET.next }}" class="btn-cancel">
+                    Cancel
+                </a>
+                
+                <input type="submit" value="Delete" class="btn-delete">
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

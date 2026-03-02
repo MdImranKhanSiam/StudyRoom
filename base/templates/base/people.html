@@ -1,0 +1,312 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'css/people.css' %}"/>
+
+<!-- <script src="{% static 'js/people.js' %}" defer></script> -->
+
+<div class="page-container">
+
+    <!-- ================= DESKTOP ================= -->
+    <div class="desktop-view">
+        <div class="layout">
+
+            <!-- Search Users -->
+            
+
+            <div class="side-panel">
+                <h3 style="margin-bottom:20px;">Your Network</h3>
+
+                <button id="all_users" class="panel-btn" onclick="window.location.href='{% url 'people' %}?search_people=all_users'">
+                    🌍 All Users
+                </button>
+
+                <button id="friends" class="panel-btn" onclick="window.location.href='{% url 'people' %}?search_people=friends'">
+                    👥 Friends
+                </button>
+
+                <button id="following" class="panel-btn" onclick="window.location.href='{% url 'people' %}?search_people=following'">
+                    ⭐ Following
+                </button>
+
+                <button id="followers" class="panel-btn" onclick="window.location.href='{% url 'people' %}?search_people=followers'">
+                    👤 Followers
+                </button>
+
+                <button id="friend_requests" class="panel-btn" onclick="window.location.href='{% url 'people' %}?search_people=friend_requests'">
+                    📩 Friend Requests
+                </button>
+            </div>
+
+            
+            <div>
+                <div class="the-main-container">
+
+                
+                <div class="people-search-container">
+                    <div class="people-search-box">
+                    <svg class="people-search-icon" viewBox="0 0 24 24">
+                        <path
+                        d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"
+                        />
+                    </svg>
+                    <input
+                            type="text"
+                            name="searched"
+                            id="user-search"
+                            placeholder="Search people"
+                            value="{{request.GET.searched | default:''}}"
+                        />
+
+                    <div class="people-search-button">
+                        
+
+                        <button type="submit">Search</button>
+                    </div>
+
+                    
+                    </div>
+                </div>
+            
+                <div class="scroll-users">
+                    <!-- <h2 style="margin-bottom:20px;">All Users</h2> -->
+
+                        
+
+                    <div class="users-list" id="desktopUsers"></div>
+                    <div class="users-list" id="searchDesktopUsers"></div>
+                </div>
+
+            </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+
+
+<script>
+
+
+
+
+const searchInput = document.getElementById("user-search");
+const desktopContainer = document.getElementById("desktopUsers");
+const searchDesktopContainer = document.getElementById("searchDesktopUsers");
+
+searchDesktopContainer.style.display = "none";
+
+
+const users = [
+    {% for user in found_users %}
+
+    {
+        id: {{ user.id }},
+        username: "{{ user.username }}",
+        name: "{{ user.userprofile.display_name }}",
+        avatar: "{{ user.userprofile.avatar }}"
+    }
+
+    {% if not forloop.last %}
+        ,
+    {% endif %}
+    
+    {% endfor %}
+];
+
+if (users.length == 0) {
+    const params = new URLSearchParams(window.location.search);
+    const peopleType = params.get("search_people");
+    let text = "";
+
+    if (peopleType === "all_users") {
+        text = "No users found";
+    } else if (peopleType === "friends") {
+            text = "You haven't made any friends yet. Time to connect!";
+    } else if (peopleType === "following") {
+            text = "You're not following anyone yet";
+    } else if (peopleType === "followers") {
+            text = "No followers"
+    } else if (peopleType === "friend_requests") {
+            text = "No pending friend requests";
+    }
+
+
+    const showResult = document.createElement("div");
+
+    showResult.innerHTML = `
+    
+        <div class="empty-state">
+            <div class="empty-card">
+                <div class="empty-icon">👥</div>
+
+                <h2>
+                    ${text}
+                </h2>
+            </div>
+        </div>
+
+    `;
+
+    desktopContainer.appendChild(showResult);
+}
+
+
+
+
+function visitUserProfile (visitUserId) {
+    window.location.href = `/user_profile/${visitUserId}/`;
+};
+
+
+
+    /* DESKTOP RENDER */
+
+
+
+
+
+
+users.forEach(user => {
+    const card = document.createElement("div");
+    card.className = "user-card";
+
+    card.innerHTML = `
+        <div class="user-left">
+            <img onclick="visitUserProfile(${user.id})" src="${user.avatar}" class="user-avatar">
+            <div>
+                <div onclick="visitUserProfile(${user.id})" class="user-name">${user.name}</div>
+                <div class="user-username">@${user.username}</div>
+            </div>
+        </div>
+        <button class="follow-btn">Follow</button>
+    `;
+
+    desktopContainer.appendChild(card);
+});
+
+
+
+
+
+const params = new URLSearchParams(window.location.search);
+const paramsValue = params.get("search_people");
+
+if (paramsValue === "all_users") {
+    document.getElementById("all_users").classList.add("active");
+} else if (paramsValue === "friends") {
+        document.getElementById("friends").classList.add("active");
+} else if (paramsValue === "following") {
+        document.getElementById("following").classList.add("active");
+} else if (paramsValue === "followers") {
+        document.getElementById("followers").classList.add("active");
+} else if (paramsValue === "friend_requests") {
+        document.getElementById("friend_requests").classList.add("active");
+}
+
+
+
+
+
+// Show active on each button click
+
+// document.addEventListener("DOMContentLoaded", function () {
+//     const button = document.querySelector(".panel-btn");
+//     button.classList.add("active")
+// });
+
+// const buttons = document.querySelectorAll(".panel-btn");
+
+
+// buttons.forEach(button => {
+//     button.addEventListener("click", function () {
+//         // Remove active from all
+//         buttons.forEach(btn => btn.classList.remove("active"));
+
+//         // Add active to clicked one
+//         this.classList.add("active");
+//     });
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+searchInput.addEventListener("input", async function () {
+    
+    const username = this.value.trim();
+
+    if (username=="") {
+        searchDesktopContainer.style.display = "none";
+        desktopContainer.style.display = "flex";
+        return;
+    }
+
+    const searched_users = await fetch(`/search_people/?username=${username}`);
+    const users = await searched_users.json();
+
+    desktopContainer.style.display = "none";
+    searchDesktopContainer.style.display = 'flex';
+
+    searchDesktopContainer.innerHTML = "";
+
+    users.forEach(user => {
+        const Id = user.id;
+        const Name = user.userprofile__display_name;
+        const Username = user.username;
+        const Avatar = user.userprofile__avatar;
+
+        const card = document.createElement("div");
+        card.className = "user-card";
+
+        card.innerHTML = `
+            <div class="user-left">
+                <img onclick="visitUserProfile(${user.id})" src="${Avatar}" class="user-avatar">
+                <div>
+                    <div>
+                        </div>
+                    <div onclick="visitUserProfile(${user.id})" class="user-name">${Name}</div>
+                    <div class="user-username">@${Username}</div>
+                </div>
+            </div>
+            <button class="follow-btn">Follow</button>
+        `;
+
+        searchDesktopContainer.appendChild(card);
+    });
+});
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+{% endblock %}
+
+

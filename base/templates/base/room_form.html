@@ -1,0 +1,51 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/room_form.css' %}">
+<script src="{% static 'js/room_form.js' %}" defer></script>
+
+<div id="floatingError" class="floating-error"></div>
+
+<div class="form-page">
+    <div class="form-card">
+        <h2>Create a Room</h2>
+        <form method="post" id="roomForm">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <label for="visibility">Group Visibility</label>
+            <select name="visibility" id="visibility">
+                <!-- <option value="private">Private</option> -->
+                <option value="public">Public</option>
+            </select>
+            <br><br>
+
+            <label for="user-search">Add Members</label>
+            <input type="text" id="user-search" placeholder="Type username...">
+            <span id="loader" style="display: none;">Searching...</span>
+            <br><br>
+
+            <div id="search-results">
+
+            </div>
+
+            <hr>
+
+            <label>Selected Members</label><br><br>
+            <div id="selected-users">
+
+            </div>
+
+            <input type="hidden" name="members" id="members-input">
+
+            <hr><br>
+
+            <button class="form-button" type="submit">Create Group</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

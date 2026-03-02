@@ -1,0 +1,567 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/room.css' %}">
+
+<div class="app">
+
+    <!-- MAIN CHAT -->
+    <div class="chat">
+
+        <!-- HEADER -->
+        <header class="chat-header">
+            <div onclick="window.location.href = `/room/{{ studyroom.id }}/`" class="user">
+                <!-- <img src="{{ user2.userprofile.avatar }}"> -->
+                <div>
+                    <h2 class="room-title">{{ studyroom.name }}</h2>
+                    <!-- <span>Online</span> -->
+                </div>
+            </div>
+
+            <button id="settingsBtn" class="icon-btn">⋮</button>
+        </header>
+
+        <!-- MESSAGES -->
+        <div class="messages" id="messages">
+            <!-- <div class="message received">Hey 👋</div>
+      <div class="message sent">Hello!</div> -->
+        </div>
+
+
+
+        {% if request.user.is_authenticated %}
+
+        <!-- INPUT -->
+        <div class="input-area">
+            <input id="messageInput" placeholder="Type your message..." required>
+            <button type="submit" id="sendBtn">Send</button>
+        </div>
+
+        {% endif %}
+
+
+
+    </div>
+
+    <!-- SETTINGS DRAWER -->
+    <aside class="drawer" id="drawer">
+
+        <div class="drawer-header">
+            <h3>Chat Info</h3>
+            <button id="closeDrawer" class="icon-btn">✕</button>
+        </div>
+
+
+
+
+
+
+
+
+
+        <div class="drawer-profile">
+            <img onclick="visitUserProfile({{ studyroom.host.id }})" src="{{ studyroom.host.userprofile.avatar }}">
+            <h3 onclick="visitUserProfile({{ studyroom.host.id }})" class="drawer-hostname">Host :
+                @{{ studyroom.host.username }}</h3>
+
+            {% if request.user == studyroom.host %}
+            <div class="room-control">
+                <h3>Room Control</h3>
+
+                <div class="room-actions">
+                    <a href="{% url 'room_edit' studyroom.id %}">Edit</a> |
+                    <a href="{% url 'delete-room' studyroom.id %}?next={{ request.get_full_path }}">Delete</a>
+                </div>
+
+            </div>
+
+            {% endif %}
+            <!-- <h4>{{ user2.userprofile.display_name }}</h4>
+      <p>@{{ user2.username }}</p> -->
+        </div>
+
+
+
+        <div class="drawer-tabs">
+            <button class="tab active" data-tab="info">Description</button>
+            <button class="tab" data-tab="media">Media</button>
+            <button class="tab" data-tab="files">Files</button>
+        </div>
+
+        <div class="drawer-content">
+            <div class="tab-content active" id="info">
+                <p class="room-description">{{ studyroom.description|linebreaksbr }}</p>
+                <!-- <p>🔒 End-to-end encrypted</p>
+                <p>Theme settings</p>
+                <p>Nicknames</p> -->
+            </div>
+
+            <div class="tab-content" id="media">
+                <p class="room-description">No media yet</p>
+            </div>
+
+            <div class="tab-content" id="files">
+                <p class="room-description">No files yet</p>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+</div>
+
+
+
+
+
+
+
+<script>
+    const roomId = {{ room.id }};
+    const current_user_id = {{ request.user.id }};
+    const drawer = document.getElementById("drawer");
+    const overlay = document.getElementById("overlay");
+    const settingsBtn = document.getElementById("settingsBtn");
+    const closeDrawer = document.getElementById("closeDrawer");
+
+
+    settingsBtn.onclick = () => {
+        drawer.classList.add("open");
+        overlay.classList.add("show");
+    };
+
+    closeDrawer.onclick = closePanel;
+    overlay.onclick = closePanel;
+
+    function closePanel() {
+        drawer.classList.remove("open");
+        overlay.classList.remove("show");
+    }
+
+
+
+    /* Tabs */
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.onclick = () => {
+            document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+            tab.classList.add("active");
+            document.getElementById(tab.dataset.tab).classList.add("active");
+        };
+    });
+
+
+    // function formatTime(timestamp) {
+    //     const date = new Date(timestamp);
+
+    //     const formattedDate = date.toLocaleDateString("en-GB", {
+    //         day: "2-digit",
+    //         month: "short",
+    //         year: "numeric"
+    //     });
+
+    //     const time = date.toLocaleTimeString("en-US", {
+    //         hour: "2-digit",
+    //         minute: "2-digit",
+    //         hour12: true
+    //     });
+
+    //     return `${formattedDate} • ${time}`;
+    // }
+
+
+
+    // Message Delete
+
+    const deleteMessageModal = document.getElementById("messageDeleteModal");
+    const messageDeleteConfirmedBtn = document.getElementById("MessageDeleteConfirmed");
+    const messageDeleteCanceledBtn = document.getElementById("MessageDeleteCanceled");
+
+    function deleteThisMessage(thisMessageId) {
+        deleteMessageModal.classList.add("active");
+
+        messageDeleteConfirmedBtn.onclick = () => {
+            deleteMessage(thisMessageId);
+            deleteMessageModal.classList.remove("active");
+        };
+
+        messageDeleteCanceledBtn.onclick = () => {
+            deleteMessageModal.classList.remove("active");
+        };
+    }
+
+
+    deleteMessageModal.onclick = (e) => {
+        if (e.target === deleteMessageModal) deleteMessageModal.classList.remove("active");
+    };
+
+    // Message Delete
+
+
+
+    /* SEND MESSAGE */
+
+    const messages = document.getElementById("messages");
+    const input = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendBtn");
+
+
+    function sendReceivedMessage(the_data) {
+        const msg = document.createElement("div");
+        msg.id = `message-${the_data.message_id}`;
+
+        let messageType;
+        let usernameType;
+
+        if (the_data.sender_id === current_user_id) {
+            messageType = "message-row sent";
+            usernameType = "message-sender-name";
+        } else {
+            messageType = "message-row received";
+            usernameType = "message-sender-name active";
+        }
+
+        msg.innerHTML = `
+    <div class="${messageType}">
+        <img onclick="visitUserProfile(${the_data.sender_id})" src="${the_data.sender_avatar}" class="message-avatar">
+        <div class="message-bubble">
+            <div class="${usernameType}">
+                ${the_data.sender_name}
+            </div>
+            <div class="message-content">
+                ${the_data.content}
+            </div>
+            <div class="message-time">
+                ${timeSince(the_data.timestamp)}
+            </div>
+        </div>
+
+         ${the_data.sender_id === current_user_id ? `
+
+            <div onclick="deleteThisMessage(${the_data.message_id})" class="message-delete">
+                Delete
+            </div>
+        
+        ` : ``}
+
+    </div>
+  `;
+
+        messages.appendChild(msg);
+
+        const distanceFromBottom = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
+
+        if (distanceFromBottom < 200) {
+            messages.scrollTop = messages.scrollHeight;
+        }
+    }
+
+    /* SEND MESSAGE */
+
+
+
+
+
+
+    // loadOlderMessages
+
+    function prependOlderMessage(the_data) {
+        const msg = document.createElement("div");
+        msg.id = `message-${the_data.message_id}`;
+        
+        let messageType;
+        let usernameType;
+
+        if (the_data.sender_id === current_user_id) {
+            messageType = "message-row sent";
+            usernameType = "message-sender-name";
+        } else {
+            messageType = "message-row received";
+            usernameType = "message-sender-name active";
+        }
+
+        msg.innerHTML = `
+    <div class="${messageType}">
+        <img onclick="visitUserProfile(${the_data.sender_id})" src="${the_data.sender_avatar}" class="message-avatar">
+        <div class="message-bubble">
+            <div class="${usernameType}">
+                ${the_data.sender_name}
+            </div>
+            <div class="message-content">
+                ${the_data.content}
+            </div>
+            <div class="message-time">
+                ${timeSince(the_data.timestamp)}
+            </div>
+        </div>
+
+
+
+         ${the_data.sender_id === current_user_id ? `
+
+            <div onclick="deleteThisMessage(${the_data.message_id})" class="message-delete">
+                Delete
+            </div>
+        
+        ` : ``}
+        
+    </div>
+  `;
+        messages.prepend(msg);
+    }
+
+    let oldMessagesRemain = true;
+
+    let oldestTimestamp;
+
+    async function loadOlderMessages() {
+        let response;
+
+        if (oldestTimestamp) {
+            response = await fetch(`/chatmessages/${roomId}/?before=${oldestTimestamp}`);
+        } else {
+            response = await fetch(`/chatmessages/${roomId}/?before=`);
+        }
+
+        const data = await response.json();
+
+        const previousHeight = messages.scrollHeight;
+
+        data.older_messages.forEach(the_data => {
+            prependOlderMessage(the_data);
+        });
+
+        const newHeight = messages.scrollHeight;
+        messages.scrollTop = newHeight - previousHeight;
+
+        if (data.has_more) {
+            oldestTimestamp = data.older_messages[data.older_messages.length - 1].timestamp;
+        } else {
+            oldMessagesRemain = false;
+        }
+    }
+
+
+
+
+
+
+
+    // Show Typing Bubble
+
+    let typingUsers = {};
+    let typingTimeouts = {};
+
+    function updateTypingIndicators() {
+        document.querySelectorAll('.typing-bubble').forEach(b => {
+            b.remove();
+        });
+
+        const typingUserIds = Object.keys(typingUsers);
+
+        if (typingUserIds.length === 0) {
+            return;
+        } else {
+            typingUserIds.forEach(id => {
+                const user = typingUsers[id];
+                const bubble = document.createElement('div');
+                bubble.classList.add('typing-bubble');
+                bubble.style.display = 'inline-flex';
+
+                bubble.innerHTML = `
+          <div class="message-row received">
+              <img src="${user.avatar}" class="message-avatar">
+
+              <div class="message-bubble">
+                  <div class="message-content">
+                      <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        `;
+
+                messages.appendChild(bubble);
+            });
+        }
+
+        const distanceFromBottom = messages.scrollHeight - messages.scrollTop - messages.clientHeight;
+
+        if (distanceFromBottom < 200) {
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+    }
+
+
+
+
+
+    function showTypingBubble(user) {
+        const typingUserId = user.user_id;
+
+        typingUsers[typingUserId] = {
+            user_id: user.user_id,
+            name: user.name,
+            avatar: user.avatar
+        };
+
+        if (typingTimeouts[typingUserId]) {
+            clearTimeout(typingTimeouts[typingUserId]);
+        };
+
+        typingTimeouts[typingUserId] = setTimeout(() => {
+            delete typingUsers[typingUserId];
+            updateTypingIndicators();
+        }, 1500);
+
+        updateTypingIndicators();
+    }
+
+    // Show Typing Bubble
+
+
+
+
+
+
+
+    // Websocket Handshake
+
+    let socket;
+
+    // wss is for production
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+
+    function initWebSocket() {
+        const url = `${wsScheme}://${window.location.host}/ws/publicChat/${roomId}/`;
+
+        socket = new WebSocket(url);
+
+        socket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+
+            if (data.type === 'message') {
+
+                the_data = {
+                    'message_id': data.message.message_id,
+                    'sender_id': data.message.sender_id,
+                    'sender_name': data.message.sender_name,
+                    'content': data.message.content,
+                    'timestamp': data.message.timestamp,
+                    'sender_avatar': data.user_avatar
+                }
+
+                sendReceivedMessage(the_data);
+            }
+
+            if (data.type === 'typing') {
+                if (data.user_id !== current_user_id) {
+                    showTypingBubble({
+                        user_id: data.user_id,
+                        name: data.user,
+                        avatar: data.user_avatar
+                    });
+                }
+            }
+
+
+
+            if (data.type === 'delete_message') {
+                const msgCard = document.getElementById(`message-${data.message_id}`);
+                // console.log('Got order');
+                // console.log(data)
+                if (msgCard) {
+                    msgCard.remove();
+                }
+            }
+
+
+
+        };
+
+        let lastTypingSent = 0;
+
+        input.addEventListener('input', () => {
+            const now = Date.now();
+
+            if (now - lastTypingSent > 500) {
+                socket.send(
+                    JSON.stringify({
+                        type: 'typing'
+                    })
+                );
+
+                lastTypingSent = now;
+            }
+        });
+
+        function sendMessage() {
+            socket.send(
+                JSON.stringify({
+                    type: 'message',
+                    message: input.value
+                })
+            );
+
+            input.value = '';
+
+        }
+
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        sendButton.addEventListener('click', e => {
+            sendMessage();
+        });
+
+    };
+
+
+    function deleteMessage(messageId) {
+        socket.send(
+            JSON.stringify({
+                type: 'delete_message',
+                message_id: messageId
+            })
+        );
+    }
+
+
+    initWebSocket();
+
+    // Websocket Handshake
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadOlderMessages();
+    });
+
+
+    messages.addEventListener("scroll", () => {
+        if (messages.scrollTop === 0) {
+            if (oldMessagesRemain) {
+                loadOlderMessages();
+            }
+        }
+    });
+
+
+
+
+</script>
+
+{% endblock %}

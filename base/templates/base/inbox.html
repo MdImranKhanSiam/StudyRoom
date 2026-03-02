@@ -1,0 +1,455 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'css/inbox.css' %}" />
+
+
+<div class="header">
+    <h2>Inbox</h2>
+    <div class="total-unread" id="totalUnread">0 New</div>
+</div>
+
+<div class="container">
+    <!-- <div class="search-box inbox">
+        <input type="text" id="searchInput" placeholder="Search chats..." />
+    </div> -->
+
+    <!-- <div id="chatList"></div> -->
+
+    <div class="users-list" id="desktopUsers"></div>
+
+    <!-- <div class="inbox-list" id="searchInbox"></div> -->
+
+</div>
+
+
+
+<script>
+
+
+
+    // fetch("/fetch_inbox/")
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //         chats = data;
+    //         renderChats(chats);
+    //     });
+
+    let got_chats = false;
+    let chats = [];
+
+
+    function fetchInbox() {
+        fetch("/fetch_inbox/")
+            .then((res) => res.json())
+            .then((data) => {
+                inbox = data;
+                renderChats(inbox);
+            })
+            .catch((err) => console.error("Error:", err))
+            .finally(() => {
+                // Call again after 5 seconds
+                setTimeout(fetchInbox, 5000);
+            });
+    }
+
+    // Start polling
+    fetchInbox();
+
+
+
+    
+
+
+
+
+
+
+
+
+    function messageUser(visitUserId) {
+        window.location.href = `/message/${visitUserId}/`;
+    };
+
+    function visitRoom(visitRoomId) {
+        window.location.href = `/room/${visitRoomId}/`;
+    };
+
+
+
+
+    let msg_count = 0;
+
+    // Render Chats
+    function renderChats(data) {
+        
+        const chatList = document.getElementById("desktopUsers");
+        chatList.innerHTML = "";
+
+        let totalUnread = 0;
+
+        // let boxes = [];
+
+        // for (let i = 0; i < 10; i++ ) {
+        //     data.rooms.forEach((room) => {
+        //         boxes.push(room);
+        //     });
+        // }
+
+
+
+     
+
+        data.rooms.forEach((chat) => {
+            
+            if ( got_chats === false ) {
+                msg_count += 1;
+                chats.push(chat);
+                console.log(msg_count);
+            }
+
+            chats.push(chat)
+            totalUnread += chat.unread_count;
+
+            const card = document.createElement("div");
+            card.classList.add("room-card");
+
+
+
+            
+
+            if (chat.room_type === 'private') {
+
+                card.innerHTML = `
+
+                    <div class="user-left">
+                        <img onclick="messageUser(${chat.id})" src="${chat.avatar}" class="user-avatar">
+                        <div>
+                            <div onclick="messageUser(${chat.id})" class="user-name">${chat.display_name} 
+                                <div class="user-left-username">
+                                @${chat.username}
+                                </div>
+                                </div>
+                            
+                        </div>
+                    </div>
+
+                    <div class="user-message">
+                        <span class="the-sender ${chat.latest_msg_sender === 'You' ? 'you' : 'other'}">
+                        ${chat.latest_msg_sender}:
+                        </span>
+                        
+                        ${chat.latest_msg}
+                        
+                    </div>
+
+                    <div class="chat-right">
+                        
+                        ${chat.unread_count > 0 ? `<div class="unread-badge">${chat.unread_count}</div>` : ""}
+                        <div class="timestamp">${timeSince(chat.latest_msg_time)}</div>
+                    </div>
+                `;
+
+
+                card.addEventListener("click", () => {
+                    messageUser(chat.id);
+                });
+
+            } else {
+
+                card.innerHTML = `
+
+    
+            
+
+                <div class="room-id">ID #${chat.id}</div>
+
+                <div class="room-content">
+                    <div class="room-title">
+                        ${chat.room_name}
+                    </div>
+
+                    <div class="room-meta">
+                        <span class="topic-badge">${chat.topic}</span>
+                        <span class="room-meta-host">Host · 
+                            
+                            <a href="/room/${chat.id}/" class="host-name-section">
+                                <span>@${chat.host_username}</span>
+                                <span class="host-avatar-wrapper">
+                                    <img src="${chat.host_avatar}">
+                                </span>
+                            </a>
+                        </span>
+                    </div>
+
+                    
+                </div>
+
+                <div class="user-message">
+
+                    
+                    <span class="the-sender ${chat.latest_msg_sender === 'You' ? 'you' : 'other'}">
+                        ${chat.latest_msg_sender}:
+                        </span>
+                    
+                    ${chat.latest_msg}</div>
+
+
+                <div class="chat-right">
+                        
+                        ${chat.unread_count > 0 ? `<div class="unread-badge">${chat.unread_count}</div>` : ""}
+                        <div class="timestamp">${timeSince(chat.latest_msg_time)}</div>
+                    </div>
+
+            
+
+
+
+
+
+
+
+
+
+                `;
+
+
+                card.addEventListener("click", () => {
+                    visitRoom(chat.id);
+                });
+
+            }
+
+
+            chatList.appendChild(card);
+        });
+
+        document.getElementById("totalUnread").innerText = totalUnread + " New";
+    
+        got_chats = true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     // Render Searched Chats
+    // function renderSearchChats(data) {
+    //     const chatList = document.getElementById("searchInbox");
+    //     const desktopchatList = document.getElementById("desktopUsers");
+
+    //     desktopchatList.style.display = "none";
+        
+    //     chatList.classList.add("active");
+
+    //     chatList.innerHTML = "";
+
+    //     let totalUnread = 0;
+
+    //     // let boxes = [];
+
+    //     // for (let i = 0; i < 10; i++ ) {
+    //     //     data.rooms.forEach((room) => {
+    //     //         boxes.push(room);
+    //     //     });
+    //     // }
+
+
+
+     
+
+    //     data.forEach((chat) => {
+        
+    //         chats.push(chat)
+
+    //         totalUnread += chat.unread_count;
+
+    //         const card = document.createElement("div");
+    //         card.classList.add("room-card");
+
+
+
+            
+
+    //         if (chat.room_type === 'private') {
+
+    //             card.innerHTML = `
+
+    //                 <div class="user-left">
+    //                     <img onclick="visitUserProfile(${chat.id})" src="${chat.avatar}" class="user-avatar">
+    //                     <div>
+    //                         <div onclick="visitUserProfile(${chat.id})" class="user-name">${chat.display_name} · @${chat.username}</div>
+                            
+    //                     </div>
+    //                 </div>
+
+    //                 <div class="user-message">
+    //                     <span class="the-sender ${chat.latest_msg_sender === 'You' ? 'you' : 'other'}">
+    //                     ${chat.latest_msg_sender}:
+    //                     </span>
+                        
+    //                     ${chat.latest_msg}
+                        
+    //                 </div>
+
+    //                 <div class="chat-right">
+                        
+    //                     ${chat.unread_count > 0 ? `<div class="unread-badge">${chat.unread_count}</div>` : ""}
+    //                     <div class="timestamp">${timeSince(chat.latest_msg_time)}</div>
+    //                 </div>
+    //             `;
+
+
+    //             card.addEventListener("click", () => {
+    //                 visitUserProfile(chat.id);
+    //             });
+
+    //         } else {
+
+    //             card.innerHTML = `
+
+    
+            
+
+    //             <div class="room-id">ID #${chat.id}</div>
+
+    //             <div class="room-content">
+    //                 <div class="room-title">
+    //                     ${chat.room_name}
+    //                 </div>
+
+    //                 <div class="room-meta">
+    //                     <span class="topic-badge">${chat.topic}</span>
+    //                     <span class="room-meta-host">Host · 
+                            
+    //                         <a href="/room/${chat.id}/" class="host-name-section">
+    //                             <span>@${chat.host_username}</span>
+    //                             <span class="host-avatar-wrapper">
+    //                                 <img src="${chat.host_avatar}">
+    //                             </span>
+    //                         </a>
+    //                     </span>
+    //                 </div>
+
+                    
+    //             </div>
+
+    //             <div class="user-message">
+
+                    
+    //                 <span class="the-sender ${chat.latest_msg_sender === 'You' ? 'you' : 'other'}">
+    //                     ${chat.latest_msg_sender}:
+    //                     </span>
+                    
+    //                 ${chat.latest_msg}</div>
+
+
+    //             <div class="chat-right">
+                        
+    //                     ${chat.unread_count > 0 ? `<div class="unread-badge">${chat.unread_count}</div>` : ""}
+    //                     <div class="timestamp">${timeSince(chat.latest_msg_time)}</div>
+    //                 </div>
+
+
+
+    //             `;
+
+
+    //             card.addEventListener("click", () => {
+    //                 visitRoom(chat.id);
+    //             });
+
+    //         }
+
+
+
+
+    //         chatList.appendChild(card);
+    //     });
+
+    //     document.getElementById("totalUnread").innerText = totalUnread + " New";
+    // }
+
+    // Search Feature
+//     document.getElementById("searchInput").addEventListener("input", function () {
+//     const value = this.value.toLowerCase().trim();
+
+    
+//     if (value=="") {
+//         const chatList = document.getElementById("searchInbox");
+//         const desktopchatList = document.getElementById("desktopUsers");
+
+//         chatList.style.display = "none";
+//         desktopchatList.style.display = "flex";
+//         return;
+//     }
+
+
+//     if (!Array.isArray(chats)) return;
+
+//     const filtered = chats.filter((chat) => {
+
+//         let searchableText = "";
+
+//         if (chat.room_type === "private") {
+//             searchableText = `
+//                 ${chat.display_name || ""}
+//                 ${chat.username || ""}
+//             `;
+//         } else if (chat.room_type === "group") {
+//             searchableText = `
+//                 ${chat.host_username || ""}
+//                 ${chat.room_name || ""}
+//                 ${chat.id || ""}
+//             `;
+//         }
+
+//         return searchableText.toLowerCase().includes(value);
+//     });
+
+//     renderSearchChats(filtered);
+// });
+
+
+    // Example: Simulate incoming message
+    // setTimeout(() => {
+    //     chats[1].unread += 1;
+    //     chats[1].lastMessage = "New secure message 🔐";
+    //     chats[1].timestamp = "Just now";
+    //     renderChats(chats);
+    // }, 5000);
+</script>
+
+
+{% endblock %}
