@@ -135,7 +135,7 @@ def delete_room(request, pk):
     
     if request.user == room.host:
         if request.method == 'POST':
-            room.delete()
+            room.chatroom.delete()
             return redirect('Homepage')
     else:
         return HttpResponse('You are not allowed to delete this room')
