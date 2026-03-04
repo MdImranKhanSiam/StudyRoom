@@ -55,7 +55,7 @@
                         <span class="room-meta-host">Host · 
                             <!-- {% url 'user_profile' room.host.id %} -->
                             <a href="{% url 'Room' room.id %}" class="host-name-section">
-                                <span>@{{ room.host.username }}</span>
+                                <span>{{ room.host.userprofile.display_name }}</span>
                                 <span class="host-avatar-wrapper">
                                     <img src="
                                         {% if room.host.userprofile.avatar %}
