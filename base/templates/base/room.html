@@ -57,7 +57,7 @@
         <div class="drawer-profile">
             <img onclick="visitUserProfile({{ studyroom.host.id }})" src="{{ studyroom.host.userprofile.avatar }}">
             <h3 onclick="visitUserProfile({{ studyroom.host.id }})" class="drawer-hostname">Host :
-                @{{ studyroom.host.username }}</h3>
+                {{ studyroom.host.userprofile.display_name }}</h3>
 
             {% if request.user == studyroom.host %}
             <div class="room-control">
