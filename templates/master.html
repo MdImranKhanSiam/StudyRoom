@@ -17,6 +17,9 @@
   </head>
 
   <body>
+
+    {% load socialaccount %}
+
     <div class="desktop-only">
       <nav class="navbar">
         <div class="nav-left">
@@ -69,7 +72,7 @@
               "
                 alt="Avatar"
               />
-              <span>{{ request.user.username }}</span>
+              <span>{{ request.user.userprofile.display_name }}</span>
             </button>
 
             <div class="nav-profile-menu" id="profileMenu">
@@ -87,7 +90,7 @@
                     />
                   </div>
                   <div class="menu-header">
-                    <strong>{{ request.user.username }}</strong>
+                    <strong>{{ request.user.userprofile.display_name }}</strong>
                     <small>View profile</small>
                   </div>
                 </div>
@@ -177,7 +180,7 @@
               />
             </div>
             <div class="menu-header">
-              <strong>{{ request.user.username }}</strong>
+              <strong>{{ request.user.userprofile.display_name }}</strong>
               <small>View profile</small>
             </div>
           </div>

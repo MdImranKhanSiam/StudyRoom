@@ -101,9 +101,7 @@
                         <img onclick="messageUser(${chat.id})" src="${chat.avatar}" class="user-avatar">
                         <div>
                             <div onclick="messageUser(${chat.id})" class="user-name">${chat.display_name} 
-                                <div class="user-left-username">
-                                @${chat.username}
-                                </div>
+                                
                                 </div>
                             
                         </div>
@@ -146,7 +144,7 @@
                         <span class="room-meta-host">Host · 
                             
                             <a href="/room/${chat.id}/" class="host-name-section">
-                                <span>@${chat.host_username}</span>
+                                <span>${chat.host_username}</span>
                                 <span class="host-avatar-wrapper">
                                     <img src="${chat.host_avatar}">
                                 </span>

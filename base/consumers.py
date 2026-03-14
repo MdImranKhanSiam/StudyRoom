@@ -41,14 +41,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if data['type'] == 'message':
             message = await self.save_message(data['message'])
-            avatar = await self.get_user_avatar(message['sender_id'])
 
             await self.channel_layer.group_send(
                 self.group_name,
                 {
                     'type' : 'chat_message',
                     'message' : message,
-                    'user_avatar' : avatar
+                    'user_avatar' : self.avatar
                 }
             )
         elif data['type'] == 'typing':
@@ -207,6 +206,7 @@ class PublicChatConsumer(AsyncWebsocketConsumer):
 
         self.user = self.scope['user']
         self.avatar = await self.get_user_avatar(self.user.id)
+        self.display_name = await self.get_user_display_name(self.user.id)
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.group_name = f'chat_{self.room_id}'
 
@@ -233,14 +233,14 @@ class PublicChatConsumer(AsyncWebsocketConsumer):
 
         if data['type'] == 'message':
             message = await self.save_message(data['message'])
-            avatar = await self.get_user_avatar(message['sender_id'])
 
             await self.channel_layer.group_send(
                 self.group_name,
                 {
                     'type' : 'chat_message',
                     'message' : message,
-                    'user_avatar' : avatar
+                    'user_avatar' : self.avatar,
+                    'user_display_name' : self.display_name
                 }
             )
         elif data['type'] == 'typing':
@@ -251,7 +251,8 @@ class PublicChatConsumer(AsyncWebsocketConsumer):
                     'type' : 'typing',
                     'user' : self.user.username,
                     'user_id' : self.user.id,
-                    'user_avatar' : self.avatar
+                    'user_avatar' : self.avatar,
+                    'user_display_name' : self.display_name
                 }
             )
         elif data['type'] == 'delete_message':
@@ -274,6 +275,13 @@ class PublicChatConsumer(AsyncWebsocketConsumer):
         from . models import UserProfile
 
         return UserProfile.objects.only("avatar").get(user_id=users_id).avatar
+    
+
+    @database_sync_to_async
+    def get_user_display_name(self, users_id):
+        from . models import UserProfile
+
+        return UserProfile.objects.only("display_name").get(user_id=users_id).display_name
         
     
     @database_sync_to_async
@@ -314,7 +322,8 @@ class PublicChatConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps({
                 'type' : 'message',
                 'message' : event['message'],
-                'user_avatar' : event['user_avatar']
+                'user_avatar' : event['user_avatar'],
+                'user_display_name' : event['user_display_name']
             })
         )
 
@@ -325,7 +334,8 @@ class PublicChatConsumer(AsyncWebsocketConsumer):
                     'type' : 'typing',
                     'user' : event['user'],
                     'user_id' : event['user_id'],
-                    'user_avatar' : event['user_avatar']
+                    'user_avatar' : event['user_avatar'],
+                    'user_display_name' : event['user_display_name']
                 })
             )
 

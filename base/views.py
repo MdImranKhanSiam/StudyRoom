@@ -440,6 +440,7 @@ def fetch_chatmessages(request, chatroom_id):
                 'sender_id': m.sender.id,
                 'sender_name': m.sender.username,
                 'sender_avatar': m.sender.userprofile.avatar,
+                'sender_display_name': m.sender.userprofile.display_name,
                 'content': m.content,
                 'timestamp': m.timestamp
             }
@@ -529,7 +530,7 @@ def fetch_inbox(request):
                             'id': current_room.id,
                             'room_type': room.room_type,
                             'visibility': room.visibility,
-                            'host_username': current_room.host.username,
+                            'host_username': current_room.host.userprofile.display_name,
                             'host_avatar': current_room.host.userprofile.avatar,
                             'room_name': current_room.name,
                             'topic': current_room.topic.name,

@@ -1,0 +1,56 @@
+{% extends "master.html" %}
+
+{% block content %}
+
+{% load socialaccount %}
+
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/login_registration.css' %}">
+
+<div class="google-auth-wrapper">
+
+<div class="google-auth-card">
+
+<div class="google-auth-title">
+Continue with Google
+</div>
+
+<div class="google-auth-text">
+You'll be redirected to Google to sign in securely, then brought right back here.
+</div>
+
+<form method="post" id="google-auth-form">
+{% csrf_token %}
+
+<button class="google-auth-button" id="google-auth-btn" type="submit">
+
+<img class="google-auth-logo"
+src="https://developers.google.com/identity/images/g-logo.png">
+
+Continue with Google
+
+</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+
+const googleBtn = document.getElementById("google-auth-btn");
+const googleForm = document.getElementById("google-auth-form");
+
+googleForm.addEventListener("submit", function(){
+    googleBtn.classList.add("google-auth-loading");
+    googleBtn.innerHTML = "Connecting to Google...";
+});
+
+</script>
+
+
+
+
+
+{% endblock %}

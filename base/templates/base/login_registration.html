@@ -2,9 +2,12 @@
 
 {% block content %}
 
+{% load socialaccount %}
+
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/login_registration.css' %}">
+
 
 {% if page_type == 'login' %}
 
@@ -14,6 +17,23 @@
             Login
         </h2>
 
+        <!-- Google Login -->
+
+
+        <!-- Google Login Button -->
+        <a href="/accounts/google/login/" class="btn-google">
+            <img src="{% static 'image/other/google-logo.png' %}" alt="Google Logo">
+            Continue with Google
+        </a>
+
+        <!-- Google Login -->
+
+        
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+       
         {% if form.errors %}
             <div class="form-errors">
                 {{ form.errors }}
@@ -32,6 +52,9 @@
             Haven't signed up yet? 
             <a href="{% url 'registration' %}">Sign up</a>
         </div>
+
+        
+
     </div>
 </div>
 
@@ -42,6 +65,23 @@
         <h2>
             Create Account
         </h2>
+
+         <!-- Google Login -->
+
+
+        <!-- Google Login Button -->
+        <a href="/accounts/google/login/" class="btn-google">
+            <img src="{% static 'image/other/google-logo.png' %}" alt="Google Logo">
+            Continue with Google
+        </a>
+
+        <!-- Google Login -->
+
+        
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
 
         {% if form.errors %}
         <div class="errors">
@@ -71,5 +111,17 @@
 </div>
 
 {% endif %}
+
+
+<script>
+
+</script>
+
+
+
+
+
+
+
 
 {% endblock %}
