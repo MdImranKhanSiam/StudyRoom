@@ -60,7 +60,7 @@ INSTALLED_APPS = [
 
 ]
 
-SITE_ID = os.environ.get("SITE_ID")
+SITE_ID = 3
 
 SOCIALACCOUNT_ADAPTER = "base.adapter.CustomSocialAccountAdapter"
 
