@@ -21,7 +21,7 @@
 
 
         <!-- Google Login Button -->
-        <a href="/accounts/google/login/" class="btn-google">
+        <a href="{% provider_login_url 'google' %}" class="btn-google">
             <img src="{% static 'image/other/google-logo.png' %}" alt="Google Logo">
             Continue with Google
         </a>
@@ -70,7 +70,7 @@
 
 
         <!-- Google Login Button -->
-        <a href="/accounts/google/login/" class="btn-google">
+        <a href="{% provider_login_url 'google' %}" class="btn-google">
             <img src="{% static 'image/other/google-logo.png' %}" alt="Google Logo">
             Continue with Google
         </a>
