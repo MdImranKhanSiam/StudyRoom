@@ -114,6 +114,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'axes.middleware.AxesMiddleware',
+    'base.middleware.BlockDirectGoogleCallbackMiddleware',
 ]
 
 
