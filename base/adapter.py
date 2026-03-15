@@ -3,7 +3,7 @@ from . models import UserProfile
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
-    def get_connect_redirect_url(self, request, socialaccount):
+    def get_login_redirect_url(self, request):
         return "/"
 
     def save_user(self, request, sociallogin, form=None):
