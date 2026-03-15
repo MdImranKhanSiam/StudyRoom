@@ -22,6 +22,7 @@ You'll be redirected to Google to sign in securely, then brought right back here
 
 <form method="post" id="google-auth-form">
 {% csrf_token %}
+{% comment %} <input type="hidden" name="next" value="/login"> {% endcomment %}
 
 <button class="google-auth-button" id="google-auth-btn" type="submit">
 

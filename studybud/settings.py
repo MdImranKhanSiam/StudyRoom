@@ -80,7 +80,6 @@ SOCIALACCOUNT_PROVIDERS = {
 
 
 
-
 ASGI_APPLICATION = 'studybud.asgi.application'
 
 if Environment == 'Development':
