@@ -2,8 +2,6 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from . models import UserProfile
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
-    def is_auto_signup_allowed(self, request, sociallogin):
-        return True
 
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
