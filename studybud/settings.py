@@ -62,7 +62,7 @@ INSTALLED_APPS = [
 
 SITE_ID = 3
 
-# SOCIALACCOUNT_ADAPTER = "base.adapter.CustomSocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "base.adapter.CustomSocialAccountAdapter"
 
 
 
