@@ -61,7 +61,7 @@ INSTALLED_APPS = [
 
 ]
 
-SITE_ID = 4
+SITE_ID = int(os.getenv('SITE_ID', 2))
 
 SOCIALACCOUNT_ADAPTER = "base.adapter.CustomSocialAccountAdapter"
 
